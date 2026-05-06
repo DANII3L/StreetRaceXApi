@@ -1,0 +1,53 @@
+# Dependencias
+node_modules/
+jspm_packages/
+
+# Compilación de TypeScript
+dist/
+out/
+*.tsbuildinfo
+
+# Variables de Entorno y Credenciales (CRÍTICO)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Firebase y llaves de Google Cloud
+# Asegúrate de que el nombre de tu archivo JSON de credenciales coincida aquí
+serviceAccountKey.json
+firebase-key.json
+*.json
+!package.json
+!tsconfig.json
+!package-lock.json
+
+# Logs y Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs
+*.log
+.pnpm-debug.log*
+
+# Configuración de IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Sistema Operativo
+.DS_Store
+Thumbs.db
+
+# Cobertura de tests
+coverage/
+.nyc_output/
+
+# Cache de herramientas
+.npm
+.eslintcache
