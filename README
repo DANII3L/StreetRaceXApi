@@ -1,10 +1,10 @@
-STREET RACE X - BACKEND
+# STREET RACE X - BACKEND
 
-SISTEMA DE GESTIÓN PARA COMPETENCIAS URBANAS DE PIQUES LEGALES
+### SISTEMA DE GESTIÓN PARA COMPETENCIAS URBANAS DE PIQUES LEGALES
 Diseñado bajo principios de Clean Architecture y comunicación en tiempo real.
 
 ========================================================================
-1. TECNOLOGÍAS PRINCIPALES
+#### 1. TECNOLOGÍAS PRINCIPALES
 ========================================================================
 * Node.js & TypeScript: Entorno de ejecución y lenguaje principal.
 * Express: Framework para el desarrollo de la API REST.
@@ -13,7 +13,7 @@ Diseñado bajo principios de Clean Architecture y comunicación en tiempo real.
 * Swagger: Documentación interactiva de la API.
 
 ========================================================================
-2. ARQUITECTURA DEL PROYECTO
+#### 2. ARQUITECTURA DEL PROYECTO
 ========================================================================
 El proyecto utiliza una estructura de capas para asegurar el desacoplamiento:
 - Domain: Entidades y reglas de negocio centrales (Rangos, Puntuación).
@@ -22,7 +22,7 @@ El proyecto utiliza una estructura de capas para asegurar el desacoplamiento:
 - Infrastructure: Implementaciones de Firebase, controladores y sockets.
 
 ========================================================================
-3. INSTALACIÓN Y USO
+#### 3. INSTALACIÓN Y USO
 ========================================================================
 1. Clonar el repositorio e instalar dependencias:
    npm install
