@@ -10,7 +10,7 @@ dotenv.config();
 export class AuthUseCase {
   constructor(
     private userRepository: IUserRepository,
-    private categoryRepository: ICompetitionCategoryRepository // Inyección necesaria
+    private categoryRepository: ICompetitionCategoryRepository
   ) {}
 
   async registrar(data: any): Promise<User> {
@@ -63,7 +63,7 @@ export class AuthUseCase {
     return nuevoUsuario;
   }
 
-  // RF-02: Inicio de sesión y emisión de JWT[cite: 1]
+  // RF-02: Inicio de sesión y emisión de JWT
   async login(email: string, password: string): Promise<{ token: string; user: User }> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) throw new Error("Credenciales inválidas");
@@ -71,7 +71,6 @@ export class AuthUseCase {
     const isPasswordValid = await bcrypt.compare(password, user.props.password_hash);
     if (!isPasswordValid) throw new Error("Credenciales inválidas");
 
-    // Generar JWT (Requerimiento No Funcional)
     const token = jwt.sign(
       { id: user.props.id, rango: user.props.rango },
       process.env.JWT_SECRET || "secret_key",

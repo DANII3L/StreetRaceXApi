@@ -129,18 +129,18 @@ export class ChallengeUseCase {
     perdedor.registrarDerrota();
 
     // 2. Validar rango
-    this.verificarRango(ganador, true);
-    this.verificarRango(perdedor, false);
+    this.verificarRango(ganador);
+    this.verificarRango(perdedor);
 
     // 3. Persistir cambios en los usuarios
-    await this.userRepository.update(ganador);
-    await this.userRepository.update(perdedor);
+    await this.userRepository.update(ganador, false);
+    await this.userRepository.update(perdedor, false);
 
     // 4. Notificar a ambos sobre el fin del reto
     this.notificarFinReto(ganadorId, perdedorId, retoId);
   }
 
-  private verificarRango(user: any, ganador: boolean): void {
+  private verificarRango(user: any): void {
     const puntos = user.props.puntos;
     const rangoActual = user.props.rango;
     let nuevoRango = rangoActual;

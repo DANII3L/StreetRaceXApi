@@ -13,12 +13,18 @@ export class FirebaseUserRepository implements IUserRepository {
     });
   }
 
-  async update(user: User): Promise<void> {
-    await this.collection.doc(user.props.id).update({
-      ...user.props,
-      updated_at: new Date()
-    });
-  }
+  async update(user: User, actualizarContrasena: boolean = true): Promise<void> {
+    const dataToUpdate: any = { 
+      ...user.props, 
+      updated_at: new Date() 
+    };
+
+    if (!actualizarContrasena) {
+      delete dataToUpdate.password_hash;
+    }
+
+    await this.collection.doc(user.props.id).update(dataToUpdate);
+}
 
   async findById(id: string): Promise<User | null> {
     const doc = await this.collection.doc(id).get();
