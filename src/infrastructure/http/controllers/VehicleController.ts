@@ -16,7 +16,8 @@ export class VehicleController {
    * /api/vehicles:
    *   post:
    *     summary: Agregar un vehículo al garaje (RF-03)
-   *     tags: [Vehicles]
+   *     tags:
+   *       - Vehicles
    *     security:
    *       - bearerAuth: []
    *     description: Permite registrar hasta 3 vehículos por usuario.
@@ -26,17 +27,65 @@ export class VehicleController {
    *         application/json:
    *           schema:
    *             type: object
+   *             required:
+   *               - user_id
+   *               - tipo_vehiculo
+   *               - marca
+   *               - modelo
+   *               - año
+   *               - color
+   *               - foto
+   *               - activo
    *             properties:
-   *               tipo_vehiculo: { type: string }
-   *               marca: { type: string }
-   *               modelo: { type: string }
-   *               año: { type: number }
-   *               placa: { type: string }
+   *               id:
+   *                 type: string
+   *                 format: uuid
+   *                 description: Identificador único del vehículo
+   *               user_id:
+   *                 type: string
+   *                 format: uuid
+   *                 description: ID del piloto propietario del vehículo
+   *               tipo_vehiculo:
+   *                 type: string
+   *                 enum:
+   *                   - auto
+   *                   - moto
+   *                   - monopatin_electrico
+   *                 description: Categoría de homologación del vehículo en la pista
+   *               marca:
+   *                 type: string
+   *                 description: Fabricante del vehículo (ej. KTM, Mazda, Xiaomi)
+   *               modelo:
+   *                 type: string
+   *                 description: Línea o modelo específico (ej. Duke 200, 3 NGP, Pro 2)
+   *               año:
+   *                 type: integer
+   *                 description: Año de fabricación del modelo
+   *               color:
+   *                 type: string
+   *                 description: Color principal de la carrocería o chasis
+   *               placa:
+   *                 type: string
+   *                 nullable: true
+   *                 description: Placa identificadora del vehículo o serial (nulo si aplica)
+   *               modificaciones:
+   *                 type: string
+   *                 nullable: true
+   *                 description: Detalles o lista de mejoras instaladas (nulo si está stock)
+   *               activo:
+   *                 type: boolean
+   *                 description: Define si es el vehículo principal para emparejamientos y matchmaking
+   *               created_at:
+   *                 type: string
+   *                 format: date-time
+   *                 description: Fecha y hora de registro del vehículo en la plataforma
    *     responses:
    *       201:
-   *         description: Vehículo creado
+   *         description: Vehículo creado correctamente
    *       400:
-   *         description: Límite de 3 vehículos excedido
+   *         description: Límite de 3 vehículos excedido o datos inválidos
+   *       401:
+   *         description: No autorizado
    */
   async create(req: Request, res: Response) {
     try {
@@ -93,17 +142,75 @@ export class VehicleController {
   }
 
   /**
-   * @swagger
-   * /api/vehicles:
-   *   get:
-   *     summary: "Obtener todos los vehículos (RF-03)"
-   *     tags: [Vehicles]
-   *     security:
-   *       - bearerAuth: []
-   *     responses:
-   *       200:
-   *         description: "Lista de vehículos obtenida"
-   */
+  * @swagger
+  * /api/vehicles:
+  *   get:
+  *     summary: Obtener todos los vehículos (RF-03)
+  *     tags:
+  *       - Vehicles
+  *     security:
+  *       - bearerAuth: []
+  *     responses:
+  *       200:
+  *         description: Lista de vehículos obtenida correctamente
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 ok:
+  *                   type: boolean
+  *                   example: true
+  *                 data:
+  *                   type: array
+  *                   items:
+  *                     type: object
+  *                     properties:
+  *                       id:
+  *                         type: string
+  *                         format: uuid
+  *                         description: Identificador único del vehículo
+  *                       user_id:
+  *                         type: string
+  *                         format: uuid
+  *                         description: ID del piloto propietario del vehículo
+  *                       tipo_vehiculo:
+  *                         type: string
+  *                         enum:
+  *                           - auto
+  *                           - moto
+  *                           - monopatin_electrico
+  *                         description: Categoría del vehículo
+  *                       marca:
+  *                         type: string
+  *                         description: Marca del vehículo
+  *                       modelo:
+  *                         type: string
+  *                         description: Modelo del vehículo
+  *                       año:
+  *                         type: integer
+  *                         description: Año de fabricación
+  *                       color:
+  *                         type: string
+  *                         description: Color del vehículo
+  *                       placa:
+  *                         type: string
+  *                         nullable: true
+  *                         description: Placa o serial del vehículo
+  *                       modificaciones:
+  *                         type: string
+  *                         nullable: true
+  *                         description: Modificaciones realizadas al vehículo
+  *                       activo:
+  *                         type: boolean
+  *                         description: Indica si el vehículo está activo
+  *                       created_at:
+  *                         type: string
+  *                         format: date-time
+  *                         description: Fecha de creación del registro
+  *       401:
+  *         description: No autorizado
+  */
   async getAll(req: Request, res: Response) {
     try {
       const userId = (req as any).user.id;

@@ -102,6 +102,18 @@ export class ChallengeUseCase {
       created_at: new Date()
     }));
 
+    const retado = await this.userRepository.findById(userId);
+
+    await this.notificationRepository.save(new Notification({
+      id: crypto.randomUUID(),
+      user_id: reto.props.retador_id,
+      tipo: aceptar ? 'reto_aceptado' : 'reto_rechazado',
+      mensaje: `¡El usuario ${retado?.props.username} a ${aceptar ? 'aceptado' : 'rechazado'} tu reto!`,
+      leida: false,
+      referencia_id: retoId,
+      created_at: new Date()
+    }));
+
     await this.challengeRepository.update(reto);
     return reto;
   }
@@ -109,35 +121,37 @@ export class ChallengeUseCase {
   // Regla 11: Registrar resultado y actualizar rangos
   async completarReto(retoId: string, ganadorId: string): Promise<void> {
 
-    const reto = await this.challengeRepository.findById(retoId);
+    try {
+      const reto = await this.challengeRepository.findById(retoId);
 
-    if (!reto || reto.props.estado !== 'aceptado') throw new Error("Reto no válido para completar");
-    
-    const perdedorId = (ganadorId === reto.props.retador_id) ? reto.props.retado_id : reto.props.retador_id;
+      if (!reto || reto.props.estado !== 'aceptado') throw new Error("Reto no válido para completar");
 
-    const ganador = await this.userRepository.findById(ganadorId);
-    const perdedor = await this.userRepository.findById(perdedorId);
+      const perdedorId = (ganadorId === reto.props.retador_id) ? reto.props.retado_id : reto.props.retador_id;
 
-    if (!ganador || !perdedor) throw new Error("No se ha encontrado alguno de los usuarios registrados.");
+      const ganador = await this.userRepository.findById(ganadorId);
+      const perdedor = await this.userRepository.findById(perdedorId);
 
-    reto.props.estado = 'completado';
-    reto.props.ganador_id = ganadorId;
-    await this.challengeRepository.update(reto);
+      if (!ganador || !perdedor) throw new Error("No se ha encontrado alguno de los usuarios registrados.");
 
-    // 1. Registro de estadísticas y puntos (+10 / -5)
-    ganador.registrarVictoria();
-    perdedor.registrarDerrota();
+      reto.props.estado = 'completado';
+      reto.props.ganador_id = ganadorId;
+      await this.challengeRepository.update(reto);
 
-    // 2. Validar rango
-    this.verificarRango(ganador);
-    this.verificarRango(perdedor);
+      ganador.registrarVictoria();
+      perdedor.registrarDerrota();
 
-    // 3. Persistir cambios en los usuarios
-    await this.userRepository.update(ganador, false);
-    await this.userRepository.update(perdedor, false);
+      this.verificarRango(ganador);
+      this.verificarRango(perdedor);
 
-    // 4. Notificar a ambos sobre el fin del reto
-    this.notificarFinReto(ganadorId, perdedorId, retoId);
+      await this.userRepository.update(ganador, false);
+      await this.userRepository.update(perdedor, false);
+
+      this.notificarFinReto(ganadorId, perdedorId, retoId);
+    } catch (error: any) {
+      throw new Error(`Ha ocurrido un error al momento de completar el torneo: ${error.message}`, { 
+        cause: error
+      });
+    }
   }
 
   private verificarRango(user: any): void {
@@ -155,9 +169,9 @@ export class ChallengeUseCase {
       const jerarquia = ['D', 'C', 'B', 'A', 'S'];
       const indiceActual = jerarquia.indexOf(rangoActual);
       const indiceNuevo = jerarquia.indexOf(nuevoRango);
-  
+
       user.actualizarRango(nuevoRango);
-  
+
       if (indiceNuevo > indiceActual) this.notificarRango(user.props.id, 'rango_subido', "¡Felicidades! Has subido de rango.");
       else this.notificarRango(user.props.id, 'rango_disminuido', "Lo lamentamos, has bajado de rango.");
     }
